@@ -1,32 +1,20 @@
-import { INotificationChannel, INotificationService } from "../core/interfaces";
+import { INotificationChannel } from "../core/interfaces";
 import { User } from "../models/User";
 
-export class NotificationService implements INotificationService {
-  private channels: Record<
-    "email" | "sms" | "push",
-    INotificationChannel | null
-  > = {
-    email: null,
-    sms: null,
-    push: null,
-  };
+export class NotificationService {
+  private channels: INotificationChannel[] = [];
 
-  addChannel(
-    channel: INotificationChannel,
-    type: "email" | "sms" | "push"
-  ): void {
-    this.channels[type] = channel;
+  constructor(channels: INotificationChannel[] = []) {
+    this.channels = channels;
   }
 
-  sendEmail(user: User, message: string): void {
-    this.channels.email?.send(user, message);
+  addChannel(channel: INotificationChannel): void {
+    this.channels.push(channel);
   }
 
-  sendSMS(user: User, message: string): void {
-    this.channels.sms?.send(user, message);
-  }
-
-  sendPush(user: User, message: string): void {
-    this.channels.push?.send(user, message);
+  send(user: User, message: string): void {
+    for (const channel of this.channels) {
+      channel.send(user, message);
+    }
   }
 }

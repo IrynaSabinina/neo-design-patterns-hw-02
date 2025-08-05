@@ -1,22 +1,27 @@
 import { User } from "./models/User";
 import { Logger } from "./services/Logger";
-import { NotificationService } from "./services/NotificationService";
 import { EmailNotification } from "./services/EmailNotification";
 import { SMSNotification } from "./services/SMSNotification";
 import { PushNotification } from "./services/PushNotification";
+import { NotificationService } from "./services/NotificationService";
 
-const logger = new Logger();
+// Створюємо користувача
 const user = new User("user@example.com", "+1234567890", "device-token-123");
 
-const email = new EmailNotification(logger);
-const sms = new SMSNotification(logger);
-const push = new PushNotification(logger);
+// Створюємо логер
+const logger = new Logger();
 
-const notificationService = new NotificationService();
-notificationService.addChannel(email, "email");
-notificationService.addChannel(sms, "sms");
-notificationService.addChannel(push, "push");
+// Створюємо канали
+const emailChannel = new EmailNotification(logger);
+const smsChannel = new SMSNotification(logger);
+const pushChannel = new PushNotification(logger);
 
-notificationService.sendEmail(user, "Ваш платіж оброблено успішно!");
-notificationService.sendSMS(user, "Ваш платіж оброблено успішно!");
-notificationService.sendPush(user, "Ваш платіж оброблено успішно!");
+// Додаємо канали до сервісу
+const notificationService = new NotificationService([
+  emailChannel,
+  smsChannel,
+  pushChannel,
+]);
+
+// Надсилаємо повідомлення
+notificationService.send(user, "Ваш платіж оброблено успішно!");
